@@ -1,5 +1,5 @@
-import { FoundationShowcaseScreen } from '@/screens/foundation/FoundationShowcaseScreen';
+import { LandingScreen } from '@/screens/public/Landing/LandingScreen';
 
-export default function Home() {
-  return <FoundationShowcaseScreen />;
+export default function HomePage() {
+  return <LandingScreen />;
 }

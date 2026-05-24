@@ -1,0 +1,38 @@
+import { cn } from '@/lib/utils';
+import { TextareaHTMLAttributes } from 'react';
+
+export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  label?: string;
+  error?: string;
+  hint?: string;
+};
+
+export function Textarea({ label, error, hint, className, id, ...rest }: TextareaProps) {
+  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
+
+  return (
+    <div className="flex flex-col gap-1">
+      {label ? (
+        <label htmlFor={inputId} className="text-sm font-medium text-[var(--color-text)]">
+          {label}
+        </label>
+      ) : null}
+      <textarea
+        id={inputId}
+        className={cn(
+          'min-h-[100px] w-full rounded-lg border bg-white px-4 py-3 text-base text-[var(--color-text)]',
+          'placeholder:text-[var(--color-text-secondary)]',
+          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[var(--color-primary)]',
+          error ? 'border-[var(--color-error)]' : 'border-[var(--color-border)]',
+          className,
+        )}
+        {...rest}
+      />
+      {error ? (
+        <p className="text-xs text-[var(--color-error)]">{error}</p>
+      ) : hint ? (
+        <p className="text-xs text-[var(--color-text-secondary)]">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
