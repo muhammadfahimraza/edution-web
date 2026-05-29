@@ -3,9 +3,23 @@
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
+import { downloadTextFile } from '@/lib/files/download';
 import { mockExportReports } from '@/mocks/principal.mock';
 
 export function PrincipalExportCenterScreen() {
+  const { showToast } = useToast();
+
+  const downloadReport = (name: string, format: string) => {
+    const content =
+      format === 'CSV'
+        ? 'metric,value\nattendance,94%\nhomework_completion,87%\n'
+        : `Edu Station Report: ${name}\nGenerated: ${new Date().toLocaleString()}\n`;
+    const filename = `${name.toLowerCase().replace(/\s+/g, '-')}.${format === 'CSV' ? 'csv' : 'txt'}`;
+    downloadTextFile(filename, content, format === 'CSV' ? 'text/csv' : 'text/plain');
+    showToast({ title: 'Download started', body: `${name} (${format})` });
+  };
+
   return (
     <>
       <AdminPageHeader title="Export center" subtitle="Download reports for offline analysis" />
@@ -31,7 +45,7 @@ export function PrincipalExportCenterScreen() {
               label="Download"
               size="sm"
               variant="outline"
-              onClick={() => alert(`Downloading ${report.name} (${report.format}) — UI demo.`)}
+              onClick={() => downloadReport(report.name, report.format)}
             />
           </li>
         ))}

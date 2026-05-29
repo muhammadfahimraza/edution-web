@@ -13,11 +13,13 @@ import {
   mockVettedTeachers,
   type VettedTeacher,
 } from '@/mocks/adminF4F9.mock';
+import { useToast } from '@/components/ui/Toast';
 
 /**
  * F8 — Vetted teachers CRUD table + profile drawer
  */
 export function AdminVettedTeachersScreen() {
+  const { showToast } = useToast();
   const [teachers, setTeachers] = useState(mockVettedTeachers);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export function AdminVettedTeachersScreen() {
   const handleAdd = (e: FormEvent) => {
     e.preventDefault();
     if (!formName.trim() || !formEmail.includes('@')) {
-      alert('Name and valid email required.');
+      showToast({ title: 'Name and valid email required', variant: 'error' });
       return;
     }
     const newTeacher: VettedTeacher = {

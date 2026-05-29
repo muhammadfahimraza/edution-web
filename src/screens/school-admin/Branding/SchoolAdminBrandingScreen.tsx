@@ -1,12 +1,15 @@
 'use client';
 
-import { ChangeEvent, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { WhiteLabelPreview } from '@/components/admin/WhiteLabelPreview';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
+import { useDemoSession } from '@/lib/demo-session/DemoSessionProvider';
+import { readFileAsDataUrl } from '@/lib/files/readImagePreview';
 import { getSchoolBySlug } from '@/lib/schoolAdmin';
-import { getSchoolBranding, presetBrandColors, type SchoolBranding } from '@/mocks/schoolAdminG1G3.mock';
+import { presetBrandColors } from '@/mocks/schoolAdminG1G3.mock';
 
 export type SchoolAdminBrandingScreenProps = {
   slug: string;
@@ -15,19 +18,28 @@ export type SchoolAdminBrandingScreenProps = {
 /** G2 — Branding & white-label */
 export function SchoolAdminBrandingScreen({ slug }: SchoolAdminBrandingScreenProps) {
   const school = getSchoolBySlug(slug);
-  const defaults = getSchoolBranding(slug);
-  const [branding, setBranding] = useState<SchoolBranding>(defaults);
+  const { showToast } = useToast();
+  const { getBranding, saveBranding } = useDemoSession();
+  const [branding, setBranding] = useState(() => getBranding(slug));
   const [saved, setSaved] = useState(false);
 
-  const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  useEffect(() => {
+    setBranding(getBranding(slug));
+  }, [getBranding, slug]);
+
+  const handleLogoUpload = async (file: File) => {
+    const logoDataUrl = await readFileAsDataUrl(file);
+    setBranding(prev => ({ ...prev, logoDataUrl }));
     setSaved(false);
   };
 
   const save = () => {
+    saveBranding(slug, branding);
     setSaved(true);
-    alert('Branding saved (mock). Mobile app and staff portal will use these settings.');
+    showToast({
+      title: 'Branding saved',
+      body: 'Mobile app and staff portal will use these settings for this session.',
+    });
   };
 
   return (
@@ -66,10 +78,24 @@ export function SchoolAdminBrandingScreen({ slug }: SchoolAdminBrandingScreenPro
               id="logo-upload"
               type="file"
               accept="image/png,image/jpeg,image/svg+xml"
-              onChange={handleLogoUpload}
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  void handleLogoUpload(file);
+                }
+              }}
               className="block w-full text-sm text-[var(--color-text-secondary)] file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--color-primary-dark)]"
             />
-            <p className="mt-1 text-xs text-[var(--color-text-secondary)]">PNG, JPG, or SVG · UI demo only</p>
+            {branding.logoDataUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={branding.logoDataUrl}
+                alt="Logo preview"
+                className="mt-3 h-16 w-auto max-w-full object-contain"
+              />
+            ) : (
+              <p className="mt-1 text-xs text-[var(--color-text-secondary)]">PNG, JPG, or SVG</p>
+            )}
           </div>
 
           <div>
@@ -117,6 +143,7 @@ export function SchoolAdminBrandingScreen({ slug }: SchoolAdminBrandingScreenPro
             schoolName={branding.displayName}
             primaryColor={branding.primaryColor}
             slug={slug}
+            logoUrl={branding.logoDataUrl}
           />
         </section>
       </div>

@@ -5,6 +5,7 @@ import { ChatBubble } from '@/components/chat/ChatBubble';
 import { ChatComposer } from '@/components/chat/ChatComposer';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { mockChatByClass, teacherClassOptions, type ChatMessage } from '@/mocks/teacher.mock';
+import type { ChatAttachment } from '@/mocks/teacher.mock';
 
 export function TeacherClassChatScreen() {
   const [classSection, setClassSection] = useState(teacherClassOptions[0]);
@@ -12,7 +13,7 @@ export function TeacherClassChatScreen() {
 
   const thread = messages[classSection] ?? [];
 
-  const sendMessage = (body: string) => {
+  const sendMessage = (body: string, attachment?: ChatAttachment) => {
     const msg: ChatMessage = {
       id: `m-${Date.now()}`,
       senderName: 'Ayesha Khan',
@@ -20,6 +21,7 @@ export function TeacherClassChatScreen() {
       body,
       time: 'Just now',
       isOwn: true,
+      attachment,
     };
     setMessages(prev => ({
       ...prev,
@@ -60,6 +62,7 @@ export function TeacherClassChatScreen() {
               senderName={m.senderName}
               time={m.time}
               isOwn={m.isOwn}
+              attachment={m.attachment}
             />
           ))}
         </div>

@@ -94,6 +94,12 @@ export const teacherClassOptions = ['9-A', '10-A'];
 
 // —— I6 Class chat ——
 
+export type ChatAttachment = {
+  name: string;
+  previewUrl?: string;
+  mimeType?: string;
+};
+
 export type ChatMessage = {
   id: string;
   senderName: string;
@@ -101,6 +107,7 @@ export type ChatMessage = {
   body: string;
   time: string;
   isOwn?: boolean;
+  attachment?: ChatAttachment;
 };
 
 export const mockChatByClass: Record<string, ChatMessage[]> = {

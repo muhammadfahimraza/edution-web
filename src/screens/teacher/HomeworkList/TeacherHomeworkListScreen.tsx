@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { HomeworkCard } from '@/components/shared/HomeworkCard';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
@@ -9,6 +10,7 @@ import { schoolTeacherBasePath } from '@/lib/schoolPortal';
 import { mockTeacherHomework, teacherClassOptions } from '@/mocks/teacher.mock';
 
 export function TeacherHomeworkListScreen({ slug }: { slug: string }) {
+  const router = useRouter();
   const base = schoolTeacherBasePath(slug);
   const [classFilter, setClassFilter] = useState<string>('all');
   const [homework] = useState(mockTeacherHomework);
@@ -61,7 +63,7 @@ export function TeacherHomeworkListScreen({ slug }: { slug: string }) {
           <HomeworkCard
             key={hw.id}
             homework={hw}
-            onClick={() => alert(`Open homework ${hw.id} — UI demo.`)}
+            onClick={() => router.push(`${base}/submissions?homework=${hw.id}`)}
           />
         ))}
       </div>

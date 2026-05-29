@@ -5,10 +5,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { defaultPointsAward, getVisitById } from '@/mocks/field.mock';
 
 /** J5 — Points award confirmation */
 export function FieldPointsConfirmScreen({ slug, visitId }: { slug: string; visitId: string }) {
+  const { showToast } = useToast();
   const router = useRouter();
   const params = useSearchParams();
   const visit = getVisitById(visitId);
@@ -21,7 +23,7 @@ export function FieldPointsConfirmScreen({ slug, visitId }: { slug: string; visi
   if (!visit) return <p className="text-sm text-[var(--color-error)]">Visit not found.</p>;
 
   const confirm = () => {
-    alert(`Awarded ${points} points to ${student} (mock).`);
+    showToast({ title: 'Points awarded', body: `${points} points added for ${student} (${topic}).` });
     router.push(`/s/${slug}/field/visits/${visitId}/classes`);
   };
 

@@ -5,10 +5,12 @@ import { FormSection } from '@/components/admin/FormSection';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { getStaffProfile } from '@/mocks/sharedK.mock';
 
 /** K2 — User profile / change password */
 export function SharedProfileScreen({ slug }: { slug: string }) {
+  const { showToast } = useToast();
   const profile = getStaffProfile(slug);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -17,18 +19,18 @@ export function SharedProfileScreen({ slug }: { slug: string }) {
 
   const changePassword = () => {
     if (!currentPassword || !newPassword) {
-      alert('Fill in all password fields.');
+      showToast({ title: 'Missing fields', body: 'Fill in all password fields.', variant: 'error' });
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert('New passwords do not match.');
+      showToast({ title: 'Passwords do not match', variant: 'error' });
       return;
     }
     setSaved(true);
     setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
-    alert('Password updated (mock).');
+    showToast({ title: 'Password updated', body: 'Your new password is active for this session.' });
   };
 
   return (

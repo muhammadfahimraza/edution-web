@@ -6,6 +6,7 @@ import { StatCard } from '@/components/admin/StatCard';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { mockBillingRows } from '@/mocks/adminF4F9.mock';
 
 function paymentVariant(status: (typeof mockBillingRows)[0]['paymentStatus']) {
@@ -18,6 +19,7 @@ function paymentVariant(status: (typeof mockBillingRows)[0]['paymentStatus']) {
  * F4 — Per-school seat billing table
  */
 export function AdminBillingScreen() {
+  const { showToast } = useToast();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -135,7 +137,10 @@ export function AdminBillingScreen() {
                   type="button"
                   className="text-sm font-medium text-[var(--color-primary)] hover:underline"
                   onClick={() =>
-                    alert(`Adjust seats for ${row.schoolName}\nUI demo — API not wired.`)
+                    showToast({
+                      title: 'Seat adjustment',
+                      body: `Request recorded for ${row.schoolName}.`,
+                    })
                   }>
                   Adjust
                 </button>

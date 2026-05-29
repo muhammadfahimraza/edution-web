@@ -6,9 +6,11 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { useToast } from '@/components/ui/Toast';
 import { classAnnouncementAudiences, mockClassAnnouncements } from '@/mocks/teacher.mock';
 
 export function TeacherClassAnnouncementScreen() {
+  const { showToast } = useToast();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [classSection, setClassSection] = useState(classAnnouncementAudiences[0].id);
@@ -16,7 +18,7 @@ export function TeacherClassAnnouncementScreen() {
 
   const send = () => {
     if (!title.trim()) {
-      alert('Title is required.');
+      showToast({ title: 'Title required', variant: 'error' });
       return;
     }
     const label = classAnnouncementAudiences.find(a => a.id === classSection)?.label ?? classSection;
@@ -26,7 +28,7 @@ export function TeacherClassAnnouncementScreen() {
     ]);
     setTitle('');
     setBody('');
-    alert('Announcement sent to class (mock).');
+    showToast({ title: 'Announcement sent', body: `Delivered to ${label}.` });
   };
 
   return (

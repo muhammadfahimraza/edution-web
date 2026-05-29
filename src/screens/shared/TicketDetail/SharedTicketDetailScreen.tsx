@@ -6,7 +6,8 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
-import { getSchoolTicket } from '@/mocks/sharedK.mock';
+import { useToast } from '@/components/ui/Toast';
+import { useDemoSession } from '@/lib/demo-session/DemoSessionProvider';
 
 function statusVariant(s: string) {
   if (s === 'escalated') return 'error' as const;
@@ -17,7 +18,9 @@ function statusVariant(s: string) {
 
 /** K1 — Ticket detail (school side) */
 export function SharedTicketDetailScreen({ ticketId }: { ticketId: string }) {
-  const ticket = getSchoolTicket(ticketId);
+  const { showToast } = useToast();
+  const { getTicket, appendTicketReply, escalateTicket } = useDemoSession();
+  const ticket = getTicket(ticketId);
   const [reply, setReply] = useState('');
 
   if (!ticket) {
@@ -25,9 +28,20 @@ export function SharedTicketDetailScreen({ ticketId }: { ticketId: string }) {
   }
 
   const sendReply = () => {
-    if (!reply.trim()) return;
-    alert('Reply sent (mock).');
+    if (!reply.trim()) {
+      return;
+    }
+    appendTicketReply(ticketId, reply.trim());
+    showToast({ title: 'Reply sent', body: 'Your message was added to the ticket thread.' });
     setReply('');
+  };
+
+  const handleEscalate = () => {
+    escalateTicket(ticketId);
+    showToast({
+      title: 'Ticket escalated',
+      body: 'Edu Station platform support will follow up.',
+    });
   };
 
   return (
@@ -45,19 +59,31 @@ export function SharedTicketDetailScreen({ ticketId }: { ticketId: string }) {
       ) : null}
 
       <dl className="mb-6 grid gap-2 text-sm sm:grid-cols-2">
-        <div><dt className="text-[var(--color-text-secondary)]">Created</dt><dd>{ticket.createdAt}</dd></div>
-        <div><dt className="text-[var(--color-text-secondary)]">Priority</dt><dd className="capitalize">{ticket.priority}</dd></div>
+        <div>
+          <dt className="text-[var(--color-text-secondary)]">Created</dt>
+          <dd>{ticket.createdAt}</dd>
+        </div>
+        <div>
+          <dt className="text-[var(--color-text-secondary)]">Priority</dt>
+          <dd className="capitalize">{ticket.priority}</dd>
+        </div>
       </dl>
 
       <TicketThread messages={ticket.messages} className="mb-6" />
 
       {ticket.status !== 'resolved' ? (
         <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-          <Textarea label="Reply" value={reply} onChange={e => setReply(e.target.value)} rows={3} placeholder="Write a reply to the requester…" />
+          <Textarea
+            label="Reply"
+            value={reply}
+            onChange={e => setReply(e.target.value)}
+            rows={3}
+            placeholder="Write a reply to the requester…"
+          />
           <div className="mt-3 flex flex-wrap gap-2">
             <Button label="Send reply" size="sm" onClick={sendReply} disabled={!reply.trim()} />
             {!ticket.escalated ? (
-              <Button label="Escalate to platform" size="sm" variant="outline" onClick={() => alert('Ticket escalated (mock).')} />
+              <Button label="Escalate to platform" size="sm" variant="outline" onClick={handleEscalate} />
             ) : null}
           </div>
         </section>

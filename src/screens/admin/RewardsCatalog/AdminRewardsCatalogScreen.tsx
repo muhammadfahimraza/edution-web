@@ -6,6 +6,7 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { mockRewardSkus, type RewardSku } from '@/mocks/adminF10F17.mock';
 import { RewardCard } from '@/components/shared/RewardCard';
 
@@ -17,6 +18,7 @@ function categoryVariant(cat: RewardSku['category']) {
 
 /** F10 — Rewards catalog */
 export function AdminRewardsCatalogScreen() {
+  const { showToast } = useToast();
   const [skus, setSkus] = useState(mockRewardSkus);
   const [query, setQuery] = useState('');
   const [view, setView] = useState<'grid' | 'table'>('grid');
@@ -36,7 +38,13 @@ export function AdminRewardsCatalogScreen() {
       <AdminPageHeader
         title="Rewards catalog"
         subtitle="Platform-wide SKUs redeemable with student points"
-        actions={<Button label="Add SKU" size="sm" onClick={() => alert('Add SKU — UI demo.')} />}
+        actions={
+          <Button
+            label="Add SKU"
+            size="sm"
+            onClick={() => showToast({ title: 'Add SKU', body: 'SKU editor opens in production.' })}
+          />
+        }
       />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">

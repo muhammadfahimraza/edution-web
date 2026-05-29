@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
@@ -16,6 +17,14 @@ function statusVariant(s: 'open' | 'in_progress' | 'escalated') {
   if (s === 'in_progress') return 'accent' as const;
   return 'warning' as const;
 }
+
+const SCHOOL_SLUG_BY_NAME: Record<string, string> = {
+  'Green Valley International': 'green-valley',
+  'Sunrise Academy': 'sunrise-academy',
+  'City Model School': 'city-model',
+  'Al-Noor High School': 'al-noor',
+  'Beacon House Campus': 'beacon-house',
+};
 
 /** F14 — Escalated tickets L2 queue */
 export function AdminEscalatedTicketsScreen() {
@@ -48,11 +57,16 @@ export function AdminEscalatedTicketsScreen() {
             {
               key: 'actions',
               header: '',
-              render: row => (
-                <button type="button" className="text-sm text-[var(--color-primary)] hover:underline" onClick={() => alert(`Open ticket ${row.id} — UI demo.`)}>
-                  Open
-                </button>
-              ),
+              render: row => {
+                const slug = SCHOOL_SLUG_BY_NAME[row.schoolName] ?? 'green-valley';
+                return (
+                  <Link
+                    href={`/s/${slug}/tickets/tk-2`}
+                    className="text-sm text-[var(--color-primary)] hover:underline">
+                    Open
+                  </Link>
+                );
+              },
             },
           ]}
         />

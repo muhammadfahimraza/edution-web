@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { getVisitById } from '@/mocks/field.mock';
 
 /** J2 — School check-in */
 export function FieldCheckInScreen({ slug, visitId }: { slug: string; visitId: string }) {
+  const { showToast } = useToast();
   const router = useRouter();
   const visit = getVisitById(visitId);
   const [gpsConfirmed, setGpsConfirmed] = useState(false);
@@ -20,7 +22,11 @@ export function FieldCheckInScreen({ slug, visitId }: { slug: string; visitId: s
 
   const checkIn = () => {
     if (!gpsConfirmed || !contactMet) {
-      alert('Confirm GPS and contact before check-in.');
+      showToast({
+        title: 'Check-in incomplete',
+        body: 'Confirm GPS and contact before check-in.',
+        variant: 'error',
+      });
       return;
     }
     router.push(`/s/${slug}/field/visits/${visitId}/classes`);

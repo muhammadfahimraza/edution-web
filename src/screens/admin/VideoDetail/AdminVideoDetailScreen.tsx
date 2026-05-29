@@ -7,6 +7,8 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
+import { useToast } from '@/components/ui/Toast';
+import { useDemoSession } from '@/lib/demo-session/DemoSessionProvider';
 import {
   formatDuration,
   getPlatformVideoById,
@@ -29,10 +31,12 @@ function statusVariant(status: PlatformVideo['status']) {
 }
 
 /**
- * F7 — Video detail: player placeholder, metadata, approve / reject / request edit
+ * F7 — Video detail: HTML5 player, metadata, approve / reject / request edit
  */
 export function AdminVideoDetailScreen({ videoId }: AdminVideoDetailScreenProps) {
   const router = useRouter();
+  const { showToast } = useToast();
+  const { getVideoStatus, setVideoStatus } = useDemoSession();
   const video = getPlatformVideoById(videoId);
   const [rejectReason, setRejectReason] = useState('');
   const [editNote, setEditNote] = useState('');
@@ -49,16 +53,23 @@ export function AdminVideoDetailScreen({ videoId }: AdminVideoDetailScreenProps)
     );
   }
 
-  const runAction = (action: string, message: string) => {
+  const status = getVideoStatus(videoId, video.status);
+
+  const runAction = (
+    action: 'approved' | 'rejected' | 'pending',
+    title: string,
+    body: string,
+  ) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      alert(`${action}\n\n${message}\n\nUI demo — status not persisted.`);
+      setVideoStatus(videoId, action === 'pending' ? 'pending' : action);
+      showToast({ title, body });
       router.push('/admin/videos');
     }, 600);
   };
 
-  const canModerate = video.status === 'pending';
+  const canModerate = status === 'pending';
 
   return (
     <>
@@ -74,16 +85,16 @@ export function AdminVideoDetailScreen({ videoId }: AdminVideoDetailScreenProps)
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="aspect-video overflow-hidden rounded-xl border border-[var(--color-border)] bg-[#1A1D21]">
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-white/80">
-              <span className="text-5xl" aria-hidden>
-                ▶
-              </span>
-              <p className="text-sm">Video player placeholder</p>
-              <p className="max-w-md px-4 text-center text-xs text-white/50">
-                Production: HLS/DASH stream from CDN. Mock URL: {video.videoUrl}
-              </p>
-            </div>
+          <div className="aspect-video overflow-hidden rounded-xl border border-[var(--color-border)] bg-black">
+            <video
+              key={video.videoUrl}
+              src={video.videoUrl}
+              controls
+              playsInline
+              className="h-full w-full"
+              poster={undefined}>
+              Your browser does not support video playback.
+            </video>
           </div>
 
           {canModerate ? (
@@ -94,7 +105,7 @@ export function AdminVideoDetailScreen({ videoId }: AdminVideoDetailScreenProps)
                   label="Approve"
                   loading={loading}
                   onClick={() =>
-                    runAction('Approved', `${video.title} will go live on the platform.`)
+                    runAction('approved', 'Video approved', `${video.title} will go live on the platform.`)
                   }
                 />
                 <Button
@@ -103,10 +114,14 @@ export function AdminVideoDetailScreen({ videoId }: AdminVideoDetailScreenProps)
                   loading={loading}
                   onClick={() => {
                     if (!rejectReason.trim()) {
-                      alert('Please enter a rejection reason.');
+                      showToast({
+                        title: 'Rejection reason required',
+                        body: 'Enter a reason before rejecting this video.',
+                        variant: 'error',
+                      });
                       return;
                     }
-                    runAction('Rejected', rejectReason);
+                    runAction('rejected', 'Video rejected', rejectReason);
                   }}
                 />
               </div>
@@ -131,23 +146,27 @@ export function AdminVideoDetailScreen({ videoId }: AdminVideoDetailScreenProps)
                 loading={loading}
                 onClick={() => {
                   if (!editNote.trim()) {
-                    alert('Add a note for the teacher.');
+                    showToast({
+                      title: 'Note required',
+                      body: 'Add feedback for the teacher before requesting edits.',
+                      variant: 'error',
+                    });
                     return;
                   }
-                  runAction('Edit requested', editNote);
+                  runAction('pending', 'Edit requested', editNote);
                 }}
               />
             </div>
           ) : (
             <div className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-4 text-sm">
-              {video.status === 'rejected' && video.rejectReason ? (
+              {status === 'rejected' && video.rejectReason ? (
                 <p>
                   <span className="font-semibold text-[var(--color-error)]">Rejected: </span>
                   {video.rejectReason}
                 </p>
               ) : (
                 <p className="text-[var(--color-text-secondary)]">
-                  This video was {video.status}
+                  This video was {status}
                   {video.reviewedAt ? ` on ${video.reviewedAt}` : ''}.
                 </p>
               )}
@@ -156,7 +175,7 @@ export function AdminVideoDetailScreen({ videoId }: AdminVideoDetailScreenProps)
         </div>
 
         <aside className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-          <Badge label={video.status} variant={statusVariant(video.status)} />
+          <Badge label={status} variant={statusVariant(status)} />
           <dl className="mt-4 flex flex-col gap-3 text-sm">
             <div>
               <dt className="text-[var(--color-text-secondary)]">Duration</dt>

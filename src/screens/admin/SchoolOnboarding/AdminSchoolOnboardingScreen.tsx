@@ -15,6 +15,7 @@ import {
   slugifySchoolName,
   type AdminPlanTier,
 } from '@/mocks/adminPlatform.mock';
+import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/lib/utils';
 
 const WIZARD_STEPS = [
@@ -32,6 +33,7 @@ const DEFAULT_PRIMARY = '#2563EB';
  * F3 — School onboarding: info → slug → branding preview → plan
  */
 export function AdminSchoolOnboardingScreen() {
+  const { showToast } = useToast();
   const router = useRouter();
   const [step, setStep] = useState<WizardStepId>('info');
   const [schoolName, setSchoolName] = useState('');
@@ -84,16 +86,17 @@ export function AdminSchoolOnboardingScreen() {
     e.preventDefault();
     const err = validateStep();
     if (err) {
-      alert(err);
+      showToast({ title: 'Validation error', body: err, variant: 'error' });
       return;
     }
     if (step === 'plan') {
       setSubmitting(true);
       setTimeout(() => {
         setSubmitting(false);
-        alert(
-          `School created (mock)\n\n${schoolName}\n/s/${slug}\nPlan: ${selectedPlan}`,
-        );
+        showToast({
+          title: 'School created',
+          body: `${schoolName} · /s/${slug} · ${selectedPlan} plan`,
+        });
         router.push('/admin/schools');
       }, 900);
       return;

@@ -5,10 +5,12 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { mockSubmissions } from '@/mocks/teacher.mock';
 import { cn } from '@/lib/utils';
 
 export function TeacherSubmissionInboxScreen() {
+  const { showToast } = useToast();
   const [submissions, setSubmissions] = useState(mockSubmissions);
   const [selectedId, setSelectedId] = useState<string | null>(mockSubmissions[0]?.id ?? null);
   const [grade, setGrade] = useState('');
@@ -29,7 +31,7 @@ export function TeacherSubmissionInboxScreen() {
         s.id === selected.id ? { ...s, status: 'graded' as const, grade: grade || 'B' } : s,
       ),
     );
-    alert('Grade saved (mock).');
+    showToast({ title: 'Grade saved', body: `${selected.studentName} marked as graded.` });
     setGrade('');
     setFeedback('');
   };

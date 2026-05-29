@@ -5,6 +5,7 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { mockTaxonomy, type TaxonomySubject } from '@/mocks/adminF4F9.mock';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +13,7 @@ import { cn } from '@/lib/utils';
  * F9 — Topic taxonomy: subject → topics nested list
  */
 export function AdminTopicTaxonomyScreen() {
+  const { showToast } = useToast();
   const [subjects, setSubjects] = useState<TaxonomySubject[]>(mockTaxonomy);
   const [expanded, setExpanded] = useState<Set<string>>(
     () => new Set(mockTaxonomy.map(s => s.id)),
@@ -34,7 +36,7 @@ export function AdminTopicTaxonomyScreen() {
     if (!name) return;
     const id = `sub-${name.toLowerCase().replace(/\s+/g, '-')}`;
     if (subjects.some(s => s.id === id)) {
-      alert('Subject already exists.');
+      showToast({ title: 'Subject already exists', variant: 'error' });
       return;
     }
     setSubjects(prev => [...prev, { id, name, topics: [] }]);

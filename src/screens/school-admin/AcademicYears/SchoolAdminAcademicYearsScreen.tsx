@@ -5,6 +5,7 @@ import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import {
   mockAcademicTerms,
   mockAcademicYears,
@@ -19,6 +20,7 @@ function yearStatusVariant(status: AcademicYearStatus) {
 
 /** G3 — Academic years / terms */
 export function SchoolAdminAcademicYearsScreen() {
+  const { showToast } = useToast();
   const [years, setYears] = useState(mockAcademicYears);
   const [terms, setTerms] = useState(mockAcademicTerms);
   const [selectedYearId, setSelectedYearId] = useState<string>('ay-2026');
@@ -48,7 +50,13 @@ export function SchoolAdminAcademicYearsScreen() {
       <AdminPageHeader
         title="Academic years & terms"
         subtitle="Define school calendar periods for homework, timetables, and reports"
-        actions={<Button label="Add year" size="sm" onClick={() => alert('Add academic year — UI demo.')} />}
+        actions={
+          <Button
+            label="Add year"
+            size="sm"
+            onClick={() => showToast({ title: 'Add academic year', body: 'Year wizard opens in production.' })}
+          />
+        }
       />
 
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
@@ -105,7 +113,12 @@ export function SchoolAdminAcademicYearsScreen() {
             <h2 className="text-lg font-semibold">Terms — {selectedYear?.label ?? 'Select a year'}</h2>
             <p className="text-sm text-[var(--color-text-secondary)]">One term should be marked as current</p>
           </div>
-          <Button label="Add term" size="sm" variant="outline" onClick={() => alert('Add term — UI demo.')} />
+          <Button
+            label="Add term"
+            size="sm"
+            variant="outline"
+            onClick={() => showToast({ title: 'Add term', body: 'Term editor opens in production.' })}
+          />
         </div>
 
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">

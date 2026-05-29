@@ -6,10 +6,12 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
 import { mockSchoolTeachers } from '@/mocks/schoolAdminG4G12.mock';
 
 /** G5 — Teachers & assignments */
 export function SchoolAdminTeachersScreen() {
+  const { showToast } = useToast();
   const [teachers] = useState(mockSchoolTeachers);
   const [query, setQuery] = useState('');
 
@@ -29,7 +31,15 @@ export function SchoolAdminTeachersScreen() {
       <AdminPageHeader
         title="Teachers & assignments"
         subtitle="Staff roster and class assignments"
-        actions={<Button label="Invite teacher" size="sm" onClick={() => alert('Invite teacher — UI demo.')} />}
+        actions={
+          <Button
+            label="Invite teacher"
+            size="sm"
+            onClick={() =>
+              showToast({ title: 'Invite sent', body: 'Teacher will receive an email invitation.' })
+            }
+          />
+        }
       />
 
       <div className="mb-4 max-w-md">

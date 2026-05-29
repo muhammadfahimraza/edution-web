@@ -7,9 +7,11 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { useToast } from '@/components/ui/Toast';
 import { announcementAudiences, mockRecentAnnouncements } from '@/mocks/principal.mock';
 
 export function PrincipalAnnouncementComposerScreen() {
+  const { showToast } = useToast();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [audience, setAudience] = useState('all');
@@ -18,7 +20,7 @@ export function PrincipalAnnouncementComposerScreen() {
 
   const publish = () => {
     if (!title.trim() || !body.trim()) {
-      alert('Title and message are required.');
+      showToast({ title: 'Title and message required', variant: 'error' });
       return;
     }
     const label = announcementAudiences.find(a => a.id === audience)?.label ?? audience;
@@ -34,7 +36,10 @@ export function PrincipalAnnouncementComposerScreen() {
     ]);
     setTitle('');
     setBody('');
-    alert(schedule ? 'Announcement scheduled (mock).' : 'Announcement sent to school (mock).');
+    showToast({
+      title: schedule ? 'Announcement scheduled' : 'Announcement sent',
+      body: schedule ? 'It will go out at the scheduled time.' : `Delivered to ${label}.`,
+    });
   };
 
   return (

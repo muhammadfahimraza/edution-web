@@ -4,10 +4,12 @@ import { StatCard } from '@/components/admin/StatCard';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { getSeatUsage } from '@/mocks/schoolAdminG4G12.mock';
 
 /** G11 — Subscription / seat usage */
 export function SchoolAdminSubscriptionScreen({ slug }: { slug: string }) {
+  const { showToast } = useToast();
   const usage = getSeatUsage(slug);
   const pct = Math.round((usage.used / usage.limit) * 100);
   const remaining = usage.limit - usage.used;
@@ -17,7 +19,14 @@ export function SchoolAdminSubscriptionScreen({ slug }: { slug: string }) {
       <AdminPageHeader
         title="Subscription & seats"
         subtitle="Plan details and seat usage"
-        actions={<Button label="Contact sales" size="sm" variant="outline" onClick={() => alert('Contact sales — UI demo.')} />}
+        actions={
+          <Button
+            label="Contact sales"
+            size="sm"
+            variant="outline"
+            onClick={() => showToast({ title: 'Message sent', body: 'Sales will contact you within one business day.' })}
+          />
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -46,7 +55,14 @@ export function SchoolAdminSubscriptionScreen({ slug }: { slug: string }) {
       <section className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <h2 className="text-sm font-semibold">Billing contact</h2>
         <p className="mt-2 text-sm">{usage.billingEmail}</p>
-        <Button className="mt-4" label="Request seat increase" size="sm" onClick={() => alert('Seat increase request sent (mock).')} />
+        <Button
+          className="mt-4"
+          label="Request seat increase"
+          size="sm"
+          onClick={() =>
+            showToast({ title: 'Request submitted', body: 'Your seat increase request is in review.' })
+          }
+        />
       </section>
     </>
   );

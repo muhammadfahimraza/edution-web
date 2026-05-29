@@ -30,7 +30,10 @@ export function StaffLoginScreen() {
     setTimeout(() => {
       setLoading(false);
       if (password === 'otp-demo') {
-        router.push(`/login/otp?email=${encodeURIComponent(email)}`);
+        const targetSlug = schoolSlug.trim() || 'green-valley';
+        router.push(
+          `/login/otp?email=${encodeURIComponent(email)}&slug=${encodeURIComponent(targetSlug)}`,
+        );
         return;
       }
       if (email.includes('@') && password.length >= 6) {

@@ -5,10 +5,12 @@ import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { mockSchoolClasses } from '@/mocks/schoolAdminG4G12.mock';
 
 /** G4 — Classes & sections */
 export function SchoolAdminClassesScreen() {
+  const { showToast } = useToast();
   const [classes] = useState(mockSchoolClasses);
 
   const rows = classes.flatMap(cls =>
@@ -26,7 +28,13 @@ export function SchoolAdminClassesScreen() {
       <AdminPageHeader
         title="Classes & sections"
         subtitle="Grade levels and homeroom sections"
-        actions={<Button label="Add class" size="sm" onClick={() => alert('Add class — UI demo.')} />}
+        actions={
+          <Button
+            label="Add class"
+            size="sm"
+            onClick={() => showToast({ title: 'Add class', body: 'Class wizard opens in production.' })}
+          />
+        }
       />
 
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
@@ -43,7 +51,12 @@ export function SchoolAdminClassesScreen() {
               key: 'actions',
               header: '',
               render: row => (
-                <button type="button" className="text-sm text-[var(--color-primary)] hover:underline" onClick={() => alert(`Edit ${row.grade} ${row.section}`)}>
+                <button
+                  type="button"
+                  className="text-sm text-[var(--color-primary)] hover:underline"
+                  onClick={() =>
+                    showToast({ title: 'Section editor', body: `Editing ${row.grade} ${row.section}.` })
+                  }>
                   Edit
                 </button>
               ),

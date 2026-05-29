@@ -6,10 +6,13 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/components/ui/Toast';
+import { exportStudentsCsv } from '@/lib/files/exportStudentsCsv';
 import { mockStudentRoster } from '@/mocks/schoolAdminG4G12.mock';
 
 /** G6 — Student roster */
 export function SchoolAdminStudentsScreen() {
+  const { showToast } = useToast();
   const [students] = useState(mockStudentRoster);
   const [query, setQuery] = useState('');
   const [classFilter, setClassFilter] = useState<string>('all');
@@ -37,7 +40,20 @@ export function SchoolAdminStudentsScreen() {
       <AdminPageHeader
         title="Student roster"
         subtitle="All enrolled students"
-        actions={<Button label="Export CSV" size="sm" variant="outline" onClick={() => alert('Export — UI demo.')} />}
+        actions={
+          <Button
+            label="Export CSV"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              exportStudentsCsv(filtered);
+              showToast({
+                title: 'Export started',
+                body: `Downloaded ${filtered.length} students as CSV.`,
+              });
+            }}
+          />
+        }
       />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">

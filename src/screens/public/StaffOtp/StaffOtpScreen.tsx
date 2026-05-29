@@ -6,6 +6,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import { AuthShell } from '@/components/layout/AuthShell';
 import { OtpInput } from '@/components/forms/OtpInput';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
+import { inferStaffPortalRole, staffPortalPath } from '@/lib/schoolPortal';
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 60;
@@ -17,7 +19,9 @@ const MOCK_VALID_OTP = '123456';
 export function StaffOtpScreen() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
   const email = searchParams.get('email') ?? 'you@school.edu.pk';
+  const slug = searchParams.get('slug') ?? 'green-valley';
 
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | undefined>();
@@ -43,7 +47,12 @@ export function StaffOtpScreen() {
     setTimeout(() => {
       setLoading(false);
       if (code === MOCK_VALID_OTP) {
-        alert('Staff portal — UI demo only, dashboard not built yet.');
+        const role = inferStaffPortalRole(email);
+        showToast({
+          title: 'Signed in',
+          body: `Opening ${role} portal for ${slug}.`,
+        });
+        router.push(staffPortalPath(slug, role));
         return;
       }
       setError('Invalid code. For demo use 123456');
@@ -57,6 +66,7 @@ export function StaffOtpScreen() {
     setResendIn(RESEND_SECONDS);
     setCode('');
     setError(undefined);
+    showToast({ title: 'Code resent', body: `A new code was sent to ${email}.` });
   };
 
   return (

@@ -10,9 +10,11 @@ import {
   type ChatPolicySettings,
   type SchoolSettings,
 } from '@/mocks/schoolAdminG4G12.mock';
+import { useToast } from '@/components/ui/Toast';
 
 /** G12 — School settings */
 export function SchoolAdminSettingsScreen() {
+  const { showToast } = useToast();
   const [settings, setSettings] = useState<SchoolSettings>(defaultSchoolSettings);
   const [saved, setSaved] = useState(false);
 
@@ -26,7 +28,7 @@ export function SchoolAdminSettingsScreen() {
 
   const save = () => {
     setSaved(true);
-    alert('Settings saved (mock).');
+    showToast({ title: 'Settings saved', body: 'Chat policies and timezone updated for this session.' });
   };
 
   return (

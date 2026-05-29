@@ -7,11 +7,9 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import {
-  getPlatformUserById,
-  searchPlatformUsers,
-  type PlatformUser,
-} from '@/mocks/adminF4F9.mock';
+import { useToast } from '@/components/ui/Toast';
+import { useDemoSession } from '@/lib/demo-session/DemoSessionProvider';
+import type { PlatformUser } from '@/mocks/adminF4F9.mock';
 
 function roleLabel(role: PlatformUser['role']) {
   return role.replace('_', ' ');
@@ -21,11 +19,24 @@ function roleLabel(role: PlatformUser['role']) {
  * F5 — Global user search + detail drawer
  */
 export function AdminUserSearchScreen() {
+  const { showToast } = useToast();
+  const { platformUsers, setPlatformUserStatus } = useDemoSession();
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const results = useMemo(() => searchPlatformUsers(query), [query]);
-  const selected = selectedId ? getPlatformUserById(selectedId) : undefined;
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      return platformUsers;
+    }
+    return platformUsers.filter(
+      u =>
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        (u.schoolName?.toLowerCase().includes(q) ?? false),
+    );
+  }, [query, platformUsers]);
+  const selected = selectedId ? platformUsers.find(u => u.id === selectedId) : undefined;
 
   return (
     <>
@@ -101,14 +112,21 @@ export function AdminUserSearchScreen() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  alert(`${selected.status === 'active' ? 'Suspend' : 'Reactivate'} ${selected.name}\nUI demo.`);
+                  const next = selected.status === 'active' ? 'suspended' : 'active';
+                  setPlatformUserStatus(selected.id, next);
+                  showToast({
+                    title: next === 'suspended' ? 'User suspended' : 'User reactivated',
+                    body: selected.name,
+                  });
                 }}
               />
               <Button
                 label="View audit log"
                 variant="ghost"
                 size="sm"
-                onClick={() => alert('Audit log — F5+ API demo.')}
+                onClick={() =>
+                  showToast({ title: 'Audit log', body: 'Full audit trail opens in production.', variant: 'info' })
+                }
               />
             </div>
           ) : undefined
