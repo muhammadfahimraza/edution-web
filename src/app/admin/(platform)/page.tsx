@@ -1,5 +1,10 @@
+import { ReportSuspense } from '@/components/analytics/ReportSuspense';
 import { AdminDashboardScreen } from '@/screens/admin/Dashboard/AdminDashboardScreen';
 
 export default function AdminDashboardPage() {
-  return <AdminDashboardScreen />;
+  return (
+    <ReportSuspense>
+      <AdminDashboardScreen />
+    </ReportSuspense>
+  );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { PortalShell } from '@/components/layout/PortalShell';
 import { AdminSidebar } from './AdminSidebar';
 
 export type AdminShellProps = {
@@ -8,22 +9,22 @@ export type AdminShellProps = {
 
 export function AdminShell({ children }: AdminShellProps) {
   return (
-    <div className="flex min-h-screen bg-[var(--color-background)]">
-      <AdminSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-white px-6">
-          <p className="text-sm text-[var(--color-text-secondary)]">
+    <PortalShell
+      sidebar={<AdminSidebar />}
+      header={
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-white px-4 sm:px-6">
+          <p className="truncate text-sm text-[var(--color-text-secondary)]">
             Edu Station · Internal
           </p>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span className="rounded-full bg-[var(--color-primary-light)] px-3 py-1 text-xs font-semibold text-[var(--color-primary-dark)]">
               Super admin
             </span>
-            <span className="text-sm font-medium">admin@edustation.pk</span>
+            <span className="hidden text-sm font-medium md:inline">admin@edustation.pk</span>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </div>
-    </div>
+      }>
+      {children}
+    </PortalShell>
   );
 }

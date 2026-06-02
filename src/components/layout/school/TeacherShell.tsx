@@ -1,5 +1,6 @@
 'use client';
 
+import { PortalShell } from '@/components/layout/PortalShell';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AppIcon } from '@/components/ui/AppIcon';
@@ -8,6 +9,7 @@ import { schoolTeacherBasePath } from '@/lib/schoolPortal';
 import { SchoolBrandingHeader } from './SchoolBrandingHeader';
 import type { IconName } from '@/lib/icons';
 import type { SchoolBranding } from '@/mocks/schoolAdminG1G3.mock';
+import { useSchoolBranding } from './useSchoolBranding';
 
 type NavItem = { segment: string; label: string; icon: IconName; exact?: boolean; exactPath?: boolean };
 
@@ -52,8 +54,8 @@ function TeacherSidebar({ slug, branding }: { slug: string; branding: SchoolBran
   const pathname = usePathname();
   const base = schoolTeacherBasePath(slug);
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-white/10 bg-[#1A1D21] text-white">
-      <div className="border-b border-white/10 px-4 py-5">
+    <aside className="flex h-full w-64 shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#1A1D21] text-white">
+      <div className="shrink-0 border-b border-white/10 px-4 py-5">
         <Link href={base} className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-lg text-lg font-bold text-white" style={{ backgroundColor: branding.primaryColor }}>{getInitial(branding.displayName)}</div>
           <div className="min-w-0"><p className="truncate text-sm font-semibold">{branding.displayName.split(' ')[0]}</p><p className="text-xs text-white/50">Teacher portal</p></div>
@@ -64,21 +66,30 @@ function TeacherSidebar({ slug, branding }: { slug: string; branding: SchoolBran
         <div className="mt-6"><NavSection title="Homework" items={HOMEWORK_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} /></div>
         <div className="mt-6"><NavSection title="Class" items={CLASS_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} /></div>
       </nav>
-      <div className="border-t border-white/10 p-4"><Link href="/login" className="text-sm text-white/60 hover:text-white">← Sign out</Link></div>
+      <div className="shrink-0 border-t border-white/10 p-4"><Link href="/login" className="text-sm text-white/60 hover:text-white">← Sign out</Link></div>
     </aside>
   );
 }
 
 export type TeacherShellProps = { slug: string; branding: SchoolBranding; children: React.ReactNode };
 
-export function TeacherShell({ slug, branding, children }: TeacherShellProps) {
+export function TeacherShell({ slug, branding: initialBranding, children }: TeacherShellProps) {
+  const { branding, brandStyle } = useSchoolBranding(slug, initialBranding);
+
   return (
-    <div className="flex min-h-screen bg-[var(--color-background)]">
-      <TeacherSidebar slug={slug} branding={branding} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <SchoolBrandingHeader branding={branding} slug={slug} portal="teacher" roleLabel="Teacher" userEmail="ayesha.khan@school.edu.pk" />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </div>
-    </div>
+    <PortalShell
+      style={brandStyle}
+      sidebar={<TeacherSidebar slug={slug} branding={branding} />}
+      header={
+        <SchoolBrandingHeader
+          branding={branding}
+          slug={slug}
+          portal="teacher"
+          roleLabel="Teacher"
+          userEmail="ayesha.khan@school.edu.pk"
+        />
+      }>
+      {children}
+    </PortalShell>
   );
 }

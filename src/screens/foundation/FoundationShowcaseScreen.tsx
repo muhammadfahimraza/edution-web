@@ -15,7 +15,7 @@ export function FoundationShowcaseScreen() {
       <header className="flex flex-col items-center gap-2 py-4 text-center">
         <EduStationLogo size={64} showWordmark />
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Design system foundation — replace logo when ready
+          Design system foundation — logo from public/edu-station-logo.png (same as mobile app)
         </p>
       </header>
 
@@ -39,7 +39,7 @@ export function FoundationShowcaseScreen() {
         <h2 className="text-lg font-semibold">Input</h2>
         <Input
           label="Phone number"
-          placeholder="+880 1XXX XXXXXX"
+          placeholder="+92 3XX XXXXXXX"
           hint="Mock field — no validation wired"
         />
         <Input

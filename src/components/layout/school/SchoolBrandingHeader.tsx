@@ -69,7 +69,3 @@ export function SchoolBrandingHeader({
     </header>
   );
 }
-
-function div({ className, children }: { className?: string; children?: React.ReactNode }) {
-  return <div className={className}>{children}</div>;
-}

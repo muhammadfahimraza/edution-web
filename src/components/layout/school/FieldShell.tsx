@@ -7,6 +7,7 @@ import { SchoolBrandingHeader } from '@/components/layout/school/SchoolBrandingH
 import { schoolFieldBasePath } from '@/lib/schoolPortal';
 import type { SyncState } from '@/mocks/field.mock';
 import type { SchoolBranding } from '@/mocks/schoolAdminG1G3.mock';
+import { useSchoolBranding } from './useSchoolBranding';
 
 export type FieldShellProps = {
   slug: string;
@@ -15,7 +16,8 @@ export type FieldShellProps = {
 };
 
 /** Mobile-first field assessor shell with J7 sync banner */
-export function FieldShell({ slug, branding, children }: FieldShellProps) {
+export function FieldShell({ slug, branding: initialBranding, children }: FieldShellProps) {
+  const { branding, brandStyle } = useSchoolBranding(slug, initialBranding);
   const [syncState, setSyncState] = useState<SyncState>('synced');
   const [pendingCount, setPendingCount] = useState(0);
 
@@ -37,7 +39,9 @@ export function FieldShell({ slug, branding, children }: FieldShellProps) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--color-background)]">
+    <div
+      className="flex min-h-screen flex-col bg-[var(--color-background)]"
+      style={brandStyle}>
       <SchoolBrandingHeader
         branding={branding}
         slug={slug}

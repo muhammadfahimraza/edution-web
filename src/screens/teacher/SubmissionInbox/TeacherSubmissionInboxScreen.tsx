@@ -9,6 +9,41 @@ import { useToast } from '@/components/ui/Toast';
 import { mockSubmissions } from '@/mocks/teacher.mock';
 import { cn } from '@/lib/utils';
 
+function SubmissionDetail({
+  selected,
+  grade,
+  feedback,
+  setGrade,
+  setFeedback,
+  saveGrade,
+}: {
+  selected: (typeof mockSubmissions)[0];
+  grade: string;
+  feedback: string;
+  setGrade: (v: string) => void;
+  setFeedback: (v: string) => void;
+  saveGrade: () => void;
+}) {
+  return (
+    <>
+      <h2 className="text-lg font-semibold">{selected.studentName}</h2>
+      <p className="text-sm text-[var(--color-text-secondary)]">
+        {selected.homeworkTitle} · {selected.classSection}
+      </p>
+      <p className="mt-4 rounded-lg bg-[var(--color-background)] p-4 text-sm">{selected.preview}</p>
+      {selected.status === 'pending' ? (
+        <div className="mt-6 flex max-w-md flex-col gap-3">
+          <Input label="Grade" value={grade} onChange={e => setGrade(e.target.value)} placeholder="A, B+, 85%…" />
+          <Input label="Feedback" value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="Optional comment" />
+          <Button label="Save grade" onClick={saveGrade} />
+        </div>
+      ) : (
+        <p className="mt-4 text-sm font-medium text-[var(--color-success)]">Graded: {selected.grade}</p>
+      )}
+    </>
+  );
+}
+
 export function TeacherSubmissionInboxScreen() {
   const { showToast } = useToast();
   const [submissions, setSubmissions] = useState(mockSubmissions);
@@ -16,6 +51,7 @@ export function TeacherSubmissionInboxScreen() {
   const [grade, setGrade] = useState('');
   const [feedback, setFeedback] = useState('');
   const [filter, setFilter] = useState<'pending' | 'all'>('pending');
+  const [mobileShowDetail, setMobileShowDetail] = useState(false);
 
   const filtered = useMemo(() => {
     if (filter === 'all') return submissions;
@@ -34,6 +70,11 @@ export function TeacherSubmissionInboxScreen() {
     showToast({ title: 'Grade saved', body: `${selected.studentName} marked as graded.` });
     setGrade('');
     setFeedback('');
+  };
+
+  const selectSubmission = (id: string) => {
+    setSelectedId(id);
+    setMobileShowDetail(true);
   };
 
   return (
@@ -56,13 +97,17 @@ export function TeacherSubmissionInboxScreen() {
         ))}
       </div>
 
-      <div className="flex min-h-[480px] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <ul className="w-full max-w-sm shrink-0 divide-y divide-[var(--color-border)] overflow-y-auto border-r border-[var(--color-border)]">
+      <div className="flex min-h-[480px] flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] lg:flex-row">
+        <ul
+          className={cn(
+            'w-full divide-y divide-[var(--color-border)] overflow-y-auto lg:max-w-sm lg:shrink-0 lg:border-r lg:border-[var(--color-border)]',
+            mobileShowDetail && 'hidden lg:block',
+          )}>
           {filtered.map(sub => (
             <li key={sub.id}>
               <button
                 type="button"
-                onClick={() => setSelectedId(sub.id)}
+                onClick={() => selectSubmission(sub.id)}
                 className={cn(
                   'w-full px-4 py-3 text-left text-sm hover:bg-[var(--color-background)]',
                   selectedId === sub.id && 'bg-[var(--color-primary-light)]',
@@ -78,24 +123,28 @@ export function TeacherSubmissionInboxScreen() {
           ))}
         </ul>
 
-        <div className="flex min-w-0 flex-1 flex-col p-5">
+        <div
+          className={cn(
+            'flex min-w-0 flex-1 flex-col p-5',
+            !mobileShowDetail && 'hidden lg:flex',
+          )}>
+          {mobileShowDetail ? (
+            <button
+              type="button"
+              className="mb-3 flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] lg:hidden"
+              onClick={() => setMobileShowDetail(false)}>
+              ← Back to list
+            </button>
+          ) : null}
           {selected ? (
-            <>
-              <h2 className="text-lg font-semibold">{selected.studentName}</h2>
-              <p className="text-sm text-[var(--color-text-secondary)]">
-                {selected.homeworkTitle} · {selected.classSection}
-              </p>
-              <p className="mt-4 rounded-lg bg-[var(--color-background)] p-4 text-sm">{selected.preview}</p>
-              {selected.status === 'pending' ? (
-                <div className="mt-6 flex max-w-md flex-col gap-3">
-                  <Input label="Grade" value={grade} onChange={e => setGrade(e.target.value)} placeholder="A, B+, 85%…" />
-                  <Input label="Feedback" value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="Optional comment" />
-                  <Button label="Save grade" onClick={saveGrade} />
-                </div>
-              ) : (
-                <p className="mt-4 text-sm font-medium text-[var(--color-success)]">Graded: {selected.grade}</p>
-              )}
-            </>
+            <SubmissionDetail
+              selected={selected}
+              grade={grade}
+              feedback={feedback}
+              setGrade={setGrade}
+              setFeedback={setFeedback}
+              saveGrade={saveGrade}
+            />
           ) : (
             <p className="text-sm text-[var(--color-text-secondary)]">Select a submission to grade.</p>
           )}

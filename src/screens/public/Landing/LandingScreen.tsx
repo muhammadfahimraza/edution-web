@@ -98,12 +98,8 @@ export function LandingScreen() {
           <p className="max-w-xl text-white/85">
             Tell us about your school and we will set up a branded demo with your logo and colours.
           </p>
-          <Link href="/for-schools">
-            <Button
-              label="Get started"
-              size="lg"
-              className="bg-white text-[var(--color-primary)] hover:bg-white/90"
-            />
+          <Link href="/for-schools" className="inline-flex">
+            <Button label="Get started" variant="inverse" size="lg" />
           </Link>
         </div>
       </section>

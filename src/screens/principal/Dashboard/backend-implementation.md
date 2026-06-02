@@ -1,9 +1,10 @@
-# Backend implementation — Principal Dashboard
+# Backend implementation — H1 Principal dashboard
 
-See `EDU_STATION_UI_PLAN.md` section H. UI-only mock at `/s/{slug}/principal/*`.
+## Overview
+Principal landing: KPIs, enrollment/homework/engagement trends, alerts, classes needing attention, upcoming visit, recent announcements.
+
+## Proposed API
+`GET /schools/{slug}/principal/dashboard?from=&to=&termId=`
 
 ## Auth
 Principal role scoped to tenant school (`slug`).
-
-## Proposed API
-`GET /schools/{slug}/principal/...` — screen-specific reads/writes per product spec.

@@ -9,6 +9,7 @@ This document describes how to exercise **UI-only** flows in `edution-web` and `
 | Staff password | Any email with password ≥ 6 chars; optional school slug (default `green-valley`) |
 | Staff OTP | Password `otp-demo` on login → OTP `123456` on `/login/otp` |
 | Staff role routing | Email contains `teacher`, `principal`, `field`, or `assessor` to route portals |
+| Platform super-admin | `/admin/login` — any `@` email, password ≥ 8 chars → `/admin` |
 | Mobile OTP | `123456` on student/parent auth screens |
 
 Default country code: **+92** (Pakistan).
@@ -31,6 +32,11 @@ Default country code: **+92** (Pakistan).
 | K1 Tickets | Reply appends to thread; escalate updates state |
 | H9 Export center | Downloads CSV/text blobs |
 | F14 Escalated tickets | Links to school ticket detail |
+| F18 Platform analytics | Tabbed hub at `/admin/analytics` |
+| G13–G19 School reports | Charts, filters, CSV export under `/s/green-valley/admin/reports/*` |
+| H2–H3 Principal reports | Same shared views at `/s/green-valley/principal/*` |
+| H11–H17 Principal insights | `/s/green-valley/principal/class-health`, `at-risk`, `points`, `timetable`, `parent-engagement`, `learning`, `rewards` |
+| H1 Principal dashboard | Analytics toolbar + trend charts + class attention widget |
 
 ## Mobile — what is functional
 
@@ -44,6 +50,23 @@ Default country code: **+92** (Pakistan).
 | B4 | Homework attachments → MediaViewer |
 | C9 | Ticket reply appends to thread |
 | D4 | Report submit → toast (not Alert) |
+
+## Responsive QA (web + marketing)
+
+Test at **375px** (phone), **768px** (iPad portrait), and **1024px+** (iPad landscape / desktop).
+
+| Check | Expected |
+|-------|----------|
+| Portal nav | Below `lg`: hamburger opens sidebar drawer; at `lg+`: fixed sidebar |
+| Public header | Below `md`: hamburger with For schools, Staff login, Sign in, Get started |
+| Data tables | Below `lg`: stacked card rows; at `lg+`: table |
+| Timetable grid | Below `lg`: per-day cards; at `lg+`: week grid |
+| Visit schedule | Below `md`: month agenda list + month nav; calendar from `md+` |
+| Submission inbox | Below `lg`: list → detail with back link |
+| Fulfillment kanban | Below `md`: single column + “Move to” select; DnD from `md+` |
+| Marketing header | CTAs in drawer below `lg`; inline nav + CTAs at `lg+` |
+
+**Route groups to spot-check:** public (7), `/admin/*` (18), `/s/green-valley/admin/*` (20), principal (17), teacher (8), field (6), shared (3), marketing `/` (single page).
 
 ## Manual test matrix (smoke)
 

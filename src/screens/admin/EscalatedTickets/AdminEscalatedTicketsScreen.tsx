@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
+import { ChartCard } from '@/components/charts/ChartCard';
+import { BarChart } from '@/components/charts/BarChart';
+import { getTicketAnalytics } from '@/mocks/analytics/platformAnalytics.mock';
+import { defaultFilters } from '@/lib/analytics/types';
 import { mockEscalatedTickets } from '@/mocks/adminF10F17.mock';
 
 function priorityVariant(p: 'high' | 'medium' | 'low') {
@@ -28,12 +32,23 @@ const SCHOOL_SLUG_BY_NAME: Record<string, string> = {
 
 /** F14 — Escalated tickets L2 queue */
 export function AdminEscalatedTicketsScreen() {
+  const ticketAnalytics = getTicketAnalytics(defaultFilters);
+
   return (
     <>
       <AdminPageHeader
         title="Escalated tickets"
         subtitle="L2 support queue — full list"
       />
+
+      <div className="mb-6 grid gap-6 lg:grid-cols-2">
+        <ChartCard title="Weekly ticket volume">
+          <BarChart data={ticketAnalytics.volume} />
+        </ChartCard>
+        <ChartCard title="Ticket age distribution">
+          <BarChart data={ticketAnalytics.age} />
+        </ChartCard>
+      </div>
 
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
         <DataTable

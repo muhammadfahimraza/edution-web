@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { ButtonHTMLAttributes } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'inverse';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -20,10 +20,13 @@ const variantClasses: Record<ButtonVariant, string> = {
   outline:
     'border border-[var(--color-primary)] bg-white text-[var(--color-primary)] hover:bg-[var(--color-primary-light)]',
   ghost: 'bg-transparent text-[var(--color-primary)] hover:bg-[var(--color-primary-light)]',
+  /** White button on primary/dark sections — explicit text color (avoids inheriting parent text-white) */
+  inverse:
+    'bg-white text-[var(--color-primary)] shadow-md hover:bg-white/90 hover:shadow-lg',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'min-h-9 px-4 py-2 text-sm',
+  sm: 'min-h-11 px-4 py-2 text-sm',
   md: 'min-h-11 px-6 py-2.5 text-sm',
   lg: 'min-h-[52px] px-8 py-3 text-base',
 };

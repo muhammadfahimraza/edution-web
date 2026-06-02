@@ -2,7 +2,7 @@
 
 ## Overview
 
-Web UI foundation: CSS design tokens, reusable primitives (`Button`, `Input`, `Card`, `Badge`, `Spinner`), and placeholder `EduStationLogo` (+ static file `public/edu-station-logo.svg`). No API calls in this phase.
+Web UI foundation: CSS design tokens, reusable primitives (`Button`, `Input`, `Card`, `Badge`, `Spinner`), and `EduStationLogo` (`public/edu-station-logo.png`, same asset as mobile). No API calls in this phase.
 
 ## User actions (UI → future API)
 

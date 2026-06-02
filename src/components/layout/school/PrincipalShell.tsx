@@ -1,5 +1,6 @@
 'use client';
 
+import { PortalShell } from '@/components/layout/PortalShell';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AppIcon } from '@/components/ui/AppIcon';
@@ -8,19 +9,27 @@ import { schoolPrincipalBasePath } from '@/lib/schoolPortal';
 import { SchoolBrandingHeader } from './SchoolBrandingHeader';
 import type { IconName } from '@/lib/icons';
 import type { SchoolBranding } from '@/mocks/schoolAdminG1G3.mock';
+import { useSchoolBranding } from './useSchoolBranding';
 
 type NavItem = { segment: string; label: string; icon: IconName; exact?: boolean };
 
 const OVERVIEW_ITEMS: NavItem[] = [
   { segment: '', label: 'Dashboard', icon: 'layoutDashboard', exact: true },
+  { segment: '/class-health', label: 'Class health', icon: 'users' },
+  { segment: '/at-risk', label: 'At-risk students', icon: 'alertTriangle' },
   { segment: '/attendance', label: 'Attendance', icon: 'clipboardList' },
 ];
 
-const REPORTS_ITEMS: NavItem[] = [
+const INSIGHTS_ITEMS: NavItem[] = [
   { segment: '/homework', label: 'Homework report', icon: 'fileText' },
-  { segment: '/leaderboards', label: 'Leaderboards', icon: 'trophy' },
-  { segment: '/visits', label: 'Visit assessments', icon: 'target' },
   { segment: '/engagement', label: 'Engagement', icon: 'trendingUp' },
+  { segment: '/learning', label: 'Learn & Spotlight', icon: 'tv' },
+  { segment: '/leaderboards', label: 'Leaderboards', icon: 'trophy' },
+  { segment: '/points', label: 'Points & merit', icon: 'medal' },
+  { segment: '/visits', label: 'Visit assessments', icon: 'target' },
+  { segment: '/timetable', label: 'Timetable', icon: 'calendarRange' },
+  { segment: '/parent-engagement', label: 'Parent engagement', icon: 'smartphone' },
+  { segment: '/rewards', label: 'Rewards', icon: 'gift' },
 ];
 
 const OPERATIONS_ITEMS: NavItem[] = [
@@ -56,8 +65,8 @@ function PrincipalSidebar({ slug, branding }: { slug: string; branding: SchoolBr
   const pathname = usePathname();
   const base = schoolPrincipalBasePath(slug);
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-white/10 bg-[#1A1D21] text-white">
-      <div className="border-b border-white/10 px-4 py-5">
+    <aside className="flex h-full w-64 shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#1A1D21] text-white">
+      <div className="shrink-0 border-b border-white/10 px-4 py-5">
         <Link href={base} className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-lg text-lg font-bold text-white" style={{ backgroundColor: branding.primaryColor }}>{getInitial(branding.displayName)}</div>
           <div className="min-w-0"><p className="truncate text-sm font-semibold">{branding.displayName.split(' ')[0]}</p><p className="text-xs text-white/50">Principal portal</p></div>
@@ -65,24 +74,33 @@ function PrincipalSidebar({ slug, branding }: { slug: string; branding: SchoolBr
       </div>
       <nav className="flex-1 overflow-y-auto px-2 py-4" aria-label="Principal">
         <NavSection title="Overview" items={OVERVIEW_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} />
-        <div className="mt-6"><NavSection title="Reports" items={REPORTS_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} /></div>
+        <div className="mt-6"><NavSection title="Insights" items={INSIGHTS_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} /></div>
         <div className="mt-6"><NavSection title="Operations" items={OPERATIONS_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} /></div>
       </nav>
-      <div className="border-t border-white/10 p-4"><Link href="/login" className="text-sm text-white/60 hover:text-white">← Sign out</Link></div>
+      <div className="shrink-0 border-t border-white/10 p-4"><Link href="/login" className="text-sm text-white/60 hover:text-white">← Sign out</Link></div>
     </aside>
   );
 }
 
 export type PrincipalShellProps = { slug: string; branding: SchoolBranding; children: React.ReactNode };
 
-export function PrincipalShell({ slug, branding, children }: PrincipalShellProps) {
+export function PrincipalShell({ slug, branding: initialBranding, children }: PrincipalShellProps) {
+  const { branding, brandStyle } = useSchoolBranding(slug, initialBranding);
+
   return (
-    <div className="flex min-h-screen bg-[var(--color-background)]">
-      <PrincipalSidebar slug={slug} branding={branding} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <SchoolBrandingHeader branding={branding} slug={slug} portal="principal" roleLabel="Principal" userEmail="principal@school.edu.pk" />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </div>
-    </div>
+    <PortalShell
+      style={brandStyle}
+      sidebar={<PrincipalSidebar slug={slug} branding={branding} />}
+      header={
+        <SchoolBrandingHeader
+          branding={branding}
+          slug={slug}
+          portal="principal"
+          roleLabel="Principal"
+          userEmail="principal@school.edu.pk"
+        />
+      }>
+      {children}
+    </PortalShell>
   );
 }

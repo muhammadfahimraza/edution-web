@@ -266,7 +266,7 @@ export const mockVettedTeachers: VettedTeacher[] = [
     verified: true,
     schoolsServed: 12,
     rating: 4.9,
-    bio: '10+ years teaching O/A Levels mathematics in Lahore.',
+    bio: '10+ years teaching O/A Levels mathematics in Karachi.',
     joinedAt: 'Sep 2024',
   },
   {

@@ -4,6 +4,10 @@ import { StatCard } from '@/components/admin/StatCard';
 import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
+import { ChartCard } from '@/components/charts/ChartCard';
+import { LineChart } from '@/components/charts/LineChart';
+import { getSmsHealthAnalytics } from '@/mocks/analytics/platformAnalytics.mock';
+import { defaultFilters } from '@/lib/analytics/types';
 import { mockSmsHealth, smsDeliveryBySchool, type SmsProviderStatus } from '@/mocks/adminF10F17.mock';
 
 function statusVariant(status: SmsProviderStatus) {
@@ -14,6 +18,7 @@ function statusVariant(status: SmsProviderStatus) {
 
 /** F17 — SMS health dashboard */
 export function AdminSmsHealthScreen() {
+  const smsAnalytics = getSmsHealthAnalytics(defaultFilters);
   const totalSent = mockSmsHealth.reduce((sum, m) => sum + m.sent24h, 0);
   const totalFailed = mockSmsHealth.reduce((sum, m) => sum + m.failed24h, 0);
   const overallRate = totalSent > 0 ? ((totalSent - totalFailed) / totalSent) * 100 : 0;
@@ -32,6 +37,10 @@ export function AdminSmsHealthScreen() {
         <StatCard label="Providers" value={String(mockSmsHealth.length)} />
       </div>
 
+      <ChartCard title="7-day success rate" subtitle="Platform average %" className="mb-8">
+        <LineChart data={smsAnalytics.line} valueFormatter={v => `${v}%`} />
+      </ChartCard>
+
       <section className="mb-8">
         <h2 className="mb-3 text-sm font-semibold">Providers</h2>
         <div className="grid gap-4 lg:grid-cols-3">
@@ -43,7 +52,7 @@ export function AdminSmsHealthScreen() {
                 <h3 className="font-semibold">{metric.provider}</h3>
                 <Badge label={metric.status} variant={statusVariant(metric.status)} />
               </div>
-              <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+              <dl className="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
                 <div>
                   <dt className="text-[var(--color-text-secondary)]">Success rate</dt>
                   <dd className="font-medium">{metric.successRatePct}%</dd>

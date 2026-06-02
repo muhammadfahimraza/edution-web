@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { SchoolBrandingHeader } from '@/components/layout/school/SchoolBrandingHeader';
 import { staffPortalPath, type StaffPortalRole } from '@/lib/schoolPortal';
 import type { SchoolBranding } from '@/mocks/schoolAdminG1G3.mock';
+import { useSchoolBranding } from './useSchoolBranding';
 
 export type SharedStaffLayoutProps = {
   slug: string;
@@ -13,7 +14,8 @@ export type SharedStaffLayoutProps = {
   children: React.ReactNode;
 };
 
-function SharedStaffLayoutInner({ slug, branding, children }: SharedStaffLayoutProps) {
+function SharedStaffLayoutInner({ slug, branding: initialBranding, children }: SharedStaffLayoutProps) {
+  const { branding, brandStyle } = useSchoolBranding(slug, initialBranding);
   const searchParams = useSearchParams();
   const from = (searchParams.get('from') as StaffPortalRole) || 'admin';
   const backHref = staffPortalPath(slug, from);
@@ -25,7 +27,9 @@ function SharedStaffLayoutInner({ slug, branding, children }: SharedStaffLayoutP
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--color-background)]">
+    <div
+      className="flex min-h-screen flex-col bg-[var(--color-background)]"
+      style={brandStyle}>
       <SchoolBrandingHeader
         branding={branding}
         slug={slug}

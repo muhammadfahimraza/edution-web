@@ -3,7 +3,7 @@
 export const fieldAssessorProfile = {
   name: 'Imran Shah',
   email: 'imran.shah@edustation.pk',
-  region: 'Lahore North',
+  region: 'Karachi North',
 };
 
 export type VisitStatus = 'scheduled' | 'checked_in' | 'in_progress' | 'completed';
@@ -26,7 +26,7 @@ export const mockTodayVisits: FieldVisit[] = [
     schoolName: 'Green Valley International',
     schoolSlug: 'green-valley',
     scheduledTime: '09:30',
-    address: 'Block 12, DHA Phase 5, Lahore',
+    address: 'Block 12, DHA Phase 5, Karachi',
     contactName: 'Principal Sara Malik',
     purpose: 'Merit program assessment',
     status: 'scheduled',
@@ -37,7 +37,7 @@ export const mockTodayVisits: FieldVisit[] = [
     schoolName: 'Sunrise Academy',
     schoolSlug: 'sunrise-academy',
     scheduledTime: '13:00',
-    address: 'Main Gulberg Road, Lahore',
+    address: 'Main Gulberg Road, Karachi',
     contactName: 'Admin Hassan Ali',
     purpose: 'Follow-up visit',
     status: 'scheduled',
@@ -48,7 +48,7 @@ export const mockTodayVisits: FieldVisit[] = [
     schoolName: 'City Model School',
     schoolSlug: 'city-model',
     scheduledTime: '15:30',
-    address: 'Model Town, Lahore',
+    address: 'Model Town, Karachi',
     contactName: 'Coordinator Ayesha Khan',
     purpose: 'Initial onboarding assessment',
     status: 'completed',

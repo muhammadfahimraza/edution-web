@@ -17,6 +17,16 @@ const SETUP_ITEMS: NavItem[] = [
   { segment: '/settings', label: 'Settings', icon: 'settings' },
 ];
 
+const REPORT_ITEMS: NavItem[] = [
+  { segment: '/reports/homework', label: 'Homework', icon: 'fileText' },
+  { segment: '/reports/engagement', label: 'Engagement', icon: 'trendingUp' },
+  { segment: '/reports/leaderboards', label: 'Leaderboards', icon: 'trophy' },
+  { segment: '/reports/visits', label: 'Visit assessments', icon: 'target' },
+  { segment: '/reports/attendance', label: 'Attendance', icon: 'clipboardList' },
+  { segment: '/reports/chat', label: 'Chat audit', icon: 'shield' },
+  { segment: '/reports/export', label: 'Export center', icon: 'upload' },
+];
+
 const MANAGE_ITEMS: NavItem[] = [
   { segment: '/classes', label: 'Classes', icon: 'bookOpen' },
   { segment: '/teachers', label: 'Teachers', icon: 'graduationCap' },
@@ -80,8 +90,8 @@ export function SchoolAdminSidebar({ slug, branding }: SchoolAdminSidebarProps) 
   const base = schoolAdminBasePath(slug);
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-white/10 bg-[#1A1D21] text-white">
-      <div className="border-b border-white/10 px-4 py-5">
+    <aside className="flex h-full w-64 shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#1A1D21] text-white">
+      <div className="shrink-0 border-b border-white/10 px-4 py-5">
         <Link href={base} className="flex items-center gap-3">
           <div
             className="flex size-10 items-center justify-center rounded-lg text-lg font-bold text-white"
@@ -98,11 +108,14 @@ export function SchoolAdminSidebar({ slug, branding }: SchoolAdminSidebarProps) 
       <nav className="flex-1 overflow-y-auto px-2 py-4" aria-label="School admin">
         <NavSection title="Setup" items={SETUP_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} />
         <div className="mt-6">
+          <NavSection title="Reports" items={REPORT_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} />
+        </div>
+        <div className="mt-6">
           <NavSection title="Manage" items={MANAGE_ITEMS} base={base} pathname={pathname} primaryColor={branding.primaryColor} />
         </div>
       </nav>
 
-      <div className="border-t border-white/10 p-4">
+      <div className="shrink-0 border-t border-white/10 p-4">
         <Link href="/login" className="text-sm text-white/60 hover:text-white">
           ← Sign out
         </Link>

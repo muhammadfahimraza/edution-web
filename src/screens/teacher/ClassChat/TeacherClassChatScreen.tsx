@@ -33,7 +33,7 @@ export function TeacherClassChatScreen() {
     <>
       <AdminPageHeader title="Class chat" subtitle="Channel for class discussion (B10 pattern)" />
 
-      <div className="mb-4 flex gap-2">
+      <div className="mb-4 flex flex-wrap gap-2">
         {teacherClassOptions.map(c => (
           <button
             key={c}
@@ -49,7 +49,7 @@ export function TeacherClassChatScreen() {
         ))}
       </div>
 
-      <div className="flex h-[520px] flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-background)]">
+      <div className="flex min-h-[min(520px,70vh)] flex-1 flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-background)]">
         <header className="border-b border-[var(--color-border)] bg-white px-4 py-3">
           <p className="font-semibold">Grade {classSection} — General</p>
           <p className="text-xs text-[var(--color-text-secondary)]">{thread.length} messages</p>

@@ -7,6 +7,11 @@ import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
+import { ChartCard } from '@/components/charts/ChartCard';
+import { LineChart } from '@/components/charts/LineChart';
+import { BarChart } from '@/components/charts/BarChart';
+import { getBillingAnalytics } from '@/mocks/analytics/platformAnalytics.mock';
+import { defaultFilters } from '@/lib/analytics/types';
 import { mockBillingRows } from '@/mocks/adminF4F9.mock';
 
 function paymentVariant(status: (typeof mockBillingRows)[0]['paymentStatus']) {
@@ -28,7 +33,7 @@ export function AdminBillingScreen() {
     return mockBillingRows.filter(r => r.schoolName.toLowerCase().includes(q));
   }, [query]);
 
-  const totalMrr = mockBillingRows.reduce((s, r) => s + r.mrrPkr, 0);
+  const billingAnalytics = getBillingAnalytics(defaultFilters);
   const overSeatCount = mockBillingRows.filter(r => r.overSeat).length;
   const overdueCount = mockBillingRows.filter(r => r.paymentStatus === 'overdue').length;
 
@@ -39,24 +44,25 @@ export function AdminBillingScreen() {
         subtitle="Seat usage and monthly recurring revenue by school"
       />
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-3">
-        <StatCard
-          label="Total MRR (mock)"
-          value={`PKR ${totalMrr.toLocaleString()}`}
-          change="All active plans"
-          trend="neutral"
-        />
-        <StatCard
-          label="Over seat limit"
-          value={String(overSeatCount)}
-          change="Requires upgrade or true-up"
-          trend={overSeatCount > 0 ? 'down' : 'up'}
-        />
-        <StatCard
-          label="Overdue invoices"
-          value={String(overdueCount)}
-          trend={overdueCount > 0 ? 'down' : 'up'}
-        />
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {billingAnalytics.kpis.map(kpi => (
+          <StatCard
+            key={kpi.label}
+            label={kpi.label}
+            value={kpi.value}
+            change={kpi.change}
+            trend={kpi.trend}
+          />
+        ))}
+      </div>
+
+      <div className="mb-6 grid gap-6 lg:grid-cols-2">
+        <ChartCard title="MRR trend" subtitle="Monthly (mock)">
+          <LineChart data={billingAnalytics.mrrTrend} />
+        </ChartCard>
+        <ChartCard title="Schools by plan" subtitle="Count per tier">
+          <BarChart data={billingAnalytics.byPlan} />
+        </ChartCard>
       </div>
 
       <div className="mb-4 max-w-md">

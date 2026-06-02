@@ -1,18 +1,20 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { StatCard } from '@/components/admin/StatCard';
-import { SimpleBarChart } from '@/components/admin/SimpleBarChart';
+import { ChartCard } from '@/components/charts/ChartCard';
+import { LineChart } from '@/components/charts/LineChart';
 import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
+import { AnalyticsToolbar } from '@/components/analytics/AnalyticsToolbar';
 import { Button } from '@/components/ui/Button';
 import { schoolAdminBasePath } from '@/lib/schoolAdmin';
-import {
-  getEnrollmentChart,
-  getSchoolActivity,
-  getSchoolKpis,
-  getSchoolBranding,
-} from '@/mocks/schoolAdminG1G3.mock';
+import { useAnalyticsFilters } from '@/hooks/useAnalyticsFilters';
+import { parseAnalyticsFilters } from '@/lib/analytics/queryParams';
+import { getSchoolBranding, getSchoolActivity } from '@/mocks/schoolAdminG1G3.mock';
+import { getSchoolDashboardAnalytics } from '@/mocks/analytics/schoolAnalytics.mock';
 
 export type SchoolAdminDashboardScreenProps = {
   slug: string;
@@ -21,10 +23,12 @@ export type SchoolAdminDashboardScreenProps = {
 /** G1 — School admin dashboard */
 export function SchoolAdminDashboardScreen({ slug }: SchoolAdminDashboardScreenProps) {
   const base = schoolAdminBasePath(slug);
-  const kpis = getSchoolKpis(slug);
-  const chart = getEnrollmentChart(slug);
-  const activity = getSchoolActivity(slug);
   const branding = getSchoolBranding(slug);
+  const searchParams = useSearchParams();
+  const filters = useMemo(() => parseAnalyticsFilters(searchParams), [searchParams]);
+  const analytics = getSchoolDashboardAnalytics(slug, filters);
+  const activity = getSchoolActivity(slug);
+  const { draft, setDraft, apply, reset, syncDraft } = useAnalyticsFilters();
 
   return (
     <>
@@ -32,14 +36,26 @@ export function SchoolAdminDashboardScreen({ slug }: SchoolAdminDashboardScreenP
         title="Dashboard"
         subtitle={`${branding.displayName} — overview`}
         actions={
-          <Link href={`${base}/academic-years`}>
-            <Button label="Manage terms" size="sm" variant="outline" />
+          <Link href={`${base}/reports/export`}>
+            <Button label="Export reports" size="sm" variant="outline" />
           </Link>
         }
       />
 
+      <div className="mb-6">
+        <AnalyticsToolbar
+          draft={draft}
+          onChange={setDraft}
+          onApply={apply}
+          onReset={() => {
+            reset();
+            syncDraft();
+          }}
+        />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map(kpi => (
+        {analytics.kpis.map(kpi => (
           <StatCard
             key={kpi.label}
             label={kpi.label}
@@ -50,54 +66,55 @@ export function SchoolAdminDashboardScreen({ slug }: SchoolAdminDashboardScreenP
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-          <h2 className="text-lg font-semibold text-[var(--color-text)]">Enrollment trend</h2>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">Active students · last 6 months</p>
-          <SimpleBarChart
-            data={chart.map(p => ({ month: p.month, schools: p.students }))}
-            className="mt-4"
-          />
-        </section>
-
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <h2 className="text-lg font-semibold text-[var(--color-text)]">Recent activity</h2>
-              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">Latest changes in your school</p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <DataTable
-              data={activity}
-              keyExtractor={row => row.id}
-              emptyMessage="No recent activity."
-              columns={[
-                {
-                  key: 'action',
-                  header: 'Action',
-                  render: row => <span className="font-medium">{row.action}</span>,
-                },
-                { key: 'detail', header: 'Detail', render: row => row.detail },
-                { key: 'when', header: 'When', render: row => row.when },
-              ]}
-            />
-          </div>
-        </section>
+      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+        <ChartCard title="Enrollment" subtitle="Active students">
+          <LineChart data={analytics.enrollmentTrend} />
+        </ChartCard>
+        <ChartCard title="Homework completion" subtitle="Weekly average %">
+          <LineChart data={analytics.homeworkTrend} valueFormatter={v => `${v}%`} />
+        </ChartCard>
+        <ChartCard title="Engagement" subtitle="Quiz attempts trend">
+          <LineChart data={analytics.engagementTrend} />
+        </ChartCard>
       </div>
 
-      <section className="mt-6 rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-        <h2 className="text-sm font-semibold text-[var(--color-text)]">Quick setup</h2>
+      <section className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+        <h2 className="text-sm font-semibold text-[var(--color-text)]">Reports</h2>
         <div className="mt-3 flex flex-wrap gap-2">
-          <Link href={`${base}/branding`}>
-            <Button label="Branding & white-label" size="sm" variant="outline" />
+          {(
+            [
+              ['homework', 'Homework'],
+              ['engagement', 'Engagement'],
+              ['attendance', 'Attendance'],
+              ['leaderboards', 'Leaderboards'],
+              ['visits', 'Visits'],
+              ['chat', 'Chat audit'],
+              ['export', 'Export'],
+            ] as const
+          ).map(([segment, label]) => (
+            <Link key={segment} href={`${base}/reports/${segment}`}>
+              <Button label={label} size="sm" variant="outline" />
+            </Link>
+          ))}
+          <Link href={`${base}/principal`}>
+            <Button label="View as principal" size="sm" variant="ghost" />
           </Link>
-          <Link href={`${base}/academic-years`}>
-            <Button label="Academic years" size="sm" variant="outline" />
-          </Link>
-          <Link href={`${base}/import`}>
-            <Button label="Import students" size="sm" variant="outline" />
-          </Link>
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+        <h2 className="text-lg font-semibold text-[var(--color-text)]">Recent activity</h2>
+        <div className="mt-4">
+          <DataTable
+            data={activity}
+            keyExtractor={row => row.id}
+            emptyMessage="No recent activity."
+            columns={[
+              { key: 'action', header: 'Action', render: row => row.action },
+              { key: 'detail', header: 'Detail', render: row => row.detail },
+              { key: 'when', header: 'When', render: row => row.when },
+            ]}
+          />
         </div>
       </section>
     </>

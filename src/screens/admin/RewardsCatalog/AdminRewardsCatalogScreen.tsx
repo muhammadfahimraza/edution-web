@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
 import { mockRewardSkus, type RewardSku } from '@/mocks/adminF10F17.mock';
 import { RewardCard } from '@/components/shared/RewardCard';
+import { cn } from '@/lib/utils';
 
 function categoryVariant(cat: RewardSku['category']) {
   if (cat === 'physical') return 'primary' as const;
@@ -47,24 +48,36 @@ export function AdminRewardsCatalogScreen() {
         }
       />
 
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="max-w-md flex-1">
-          <Input label="Search SKUs" placeholder="Name or category…" value={query} onChange={e => setQuery(e.target.value)} />
-        </div>
-        <div className="flex gap-2">
-          {(['grid', 'table'] as const).map(v => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setView(v)}
-              className={
-                view === v
-                  ? 'rounded-full bg-[var(--color-primary)] px-4 py-1.5 text-sm font-semibold text-white'
-                  : 'rounded-full border border-[var(--color-border)] bg-white px-4 py-1.5 text-sm font-medium text-[var(--color-text-secondary)]'
-              }>
-              {v === 'grid' ? 'Grid' : 'Table'}
-            </button>
-          ))}
+      <div className="mb-4 flex w-full flex-col gap-3">
+        <Input
+          label="Search SKUs"
+          placeholder="Name or category…"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <span className="text-sm font-medium text-[var(--color-text)]">View</span>
+          <div
+            role="radiogroup"
+            aria-label="Catalog view"
+            className="inline-flex w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-1 sm:w-auto">
+            {(['grid', 'table'] as const).map(v => (
+              <button
+                key={v}
+                type="button"
+                role="radio"
+                aria-checked={view === v}
+                onClick={() => setView(v)}
+                className={cn(
+                  'min-h-10 flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors sm:min-w-[5.5rem] sm:flex-initial',
+                  view === v
+                    ? 'bg-[var(--color-primary)] text-white shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]',
+                )}>
+                {v === 'grid' ? 'Grid' : 'Table'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -63,7 +63,7 @@ export function WhiteLabelPreview({
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]">
           Web staff portal
         </p>
-        <div className="flex overflow-hidden rounded-xl border border-[var(--color-border)] bg-white shadow-sm">
+        <div className="flex overflow-x-auto overflow-y-hidden rounded-xl border border-[var(--color-border)] bg-white shadow-sm">
           <div className="w-16 shrink-0 p-2" style={{ backgroundColor: '#1A1D21' }}>
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element

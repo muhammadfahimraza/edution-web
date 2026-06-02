@@ -1,78 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DataTable } from '@/components/admin/DataTable';
-import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
-import { LeaderboardRow } from '@/components/shared/LeaderboardRow';
-import { mockClassLeaderboard } from '@/mocks/principal.mock';
+import { ReportLayout } from '@/components/analytics/ReportLayout';
+import {
+  getLeaderboardByScope,
+  type PrincipalLeaderboardScope,
+} from '@/mocks/principalInsights.mock';
+import { cn } from '@/lib/utils';
 
-const SCOPES = ['Class', 'Grade', 'School'] as const;
+const SCOPES: { id: PrincipalLeaderboardScope; label: string }[] = [
+  { id: 'class', label: 'Class' },
+  { id: 'grade', label: 'Grade' },
+  { id: 'school', label: 'School' },
+];
 
-export function PrincipalLeaderboardsScreen() {
-  const [scope, setScope] = useState<(typeof SCOPES)[number]>('Class');
+export function PrincipalLeaderboardsScreen({ slug: _slug }: { slug: string }) {
+  const [scope, setScope] = useState<PrincipalLeaderboardScope>('school');
+  const rows = useMemo(() => getLeaderboardByScope(scope), [scope]);
 
   return (
-    <>
-      <AdminPageHeader title="Leaderboards" subtitle="Student rankings by scope" />
-
+    <ReportLayout
+      title="Leaderboards"
+      subtitle="Student and grade rankings for the current term"
+      kpis={[
+        { label: 'Students ranked', value: String(rows.length), trend: 'neutral' },
+        { label: 'Top score', value: String(rows[0]?.points ?? 0), trend: 'up' },
+        { label: 'Scope', value: scope, trend: 'neutral' },
+        { label: 'Term', value: '2026 Spring', trend: 'neutral' },
+      ]}
+    >
       <div className="mb-4 flex gap-2">
         {SCOPES.map(s => (
           <button
-            key={s}
+            key={s.id}
             type="button"
-            onClick={() => setScope(s)}
-            className={
-              scope === s
-                ? 'rounded-full bg-[var(--color-primary)] px-4 py-1.5 text-sm font-semibold text-white'
-                : 'rounded-full border border-[var(--color-border)] bg-white px-4 py-1.5 text-sm font-medium text-[var(--color-text-secondary)]'
-            }>
-            {s}
+            onClick={() => setScope(s.id)}
+            className={cn(
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              scope === s.id
+                ? 'bg-[var(--color-primary)] text-white'
+                : 'border border-[var(--color-border)] bg-white text-[var(--color-text-secondary)]',
+            )}>
+            {s.label}
           </button>
         ))}
       </div>
 
-      {scope !== 'Class' ? (
-        <p className="mb-4 rounded-lg bg-[var(--color-background)] px-4 py-3 text-sm text-[var(--color-text-secondary)]">
-          Showing sample <strong>Class</strong> rankings. {scope} view — UI demo.
-        </p>
-      ) : null}
-
-      <div className="mb-6 flex flex-col gap-2 lg:hidden">
-        {mockClassLeaderboard.slice(0, 5).map(row => (
-          <LeaderboardRow
-            key={row.rank}
-            rank={row.rank}
-            name={row.name}
-            subtitle={row.classSection}
-            points={row.points}
-            change={row.change}
-            highlight={row.rank <= 3}
-          />
-        ))}
-      </div>
-
-      <div className="hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] lg:block">
+      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
         <DataTable
-          data={mockClassLeaderboard}
-          keyExtractor={row => String(row.rank)}
+          data={rows}
+          keyExtractor={row => `${scope}-${row.rank}`}
           emptyMessage="No rankings."
           columns={[
-            { key: 'rank', header: '#', render: row => <span className="font-bold">{row.rank}</span> },
-            { key: 'name', header: 'Student', render: row => row.name },
+            { key: 'rank', header: '#', render: row => row.rank },
+            { key: 'name', header: scope === 'grade' ? 'Grade' : 'Student', render: row => <span className="font-medium">{row.name}</span> },
             { key: 'class', header: 'Class', render: row => row.classSection },
-            { key: 'pts', header: 'Points', render: row => row.points.toLocaleString() },
+            { key: 'points', header: 'Points', render: row => row.points },
             {
-              key: 'chg',
+              key: 'change',
               header: 'Change',
               render: row => (
-                <span className={row.change >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]'}>
-                  {row.change >= 0 ? '+' : ''}{row.change}
+                <span className={row.change >= 0 ? 'text-green-600' : 'text-red-600'}>
+                  {row.change >= 0 ? '+' : ''}
+                  {row.change}
                 </span>
               ),
             },
           ]}
         />
       </div>
-    </>
+    </ReportLayout>
   );
 }

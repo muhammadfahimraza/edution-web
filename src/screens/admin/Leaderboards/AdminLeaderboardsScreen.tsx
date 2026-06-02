@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
+import { ChartCard } from '@/components/charts/ChartCard';
+import { BarChart } from '@/components/charts/BarChart';
+import { getLeaderboardAnalytics } from '@/mocks/analytics/platformAnalytics.mock';
+import { defaultFilters } from '@/lib/analytics/types';
 import {
   leaderboardTerms,
   mockSchoolRankings,
@@ -14,6 +18,7 @@ import {
 export function AdminLeaderboardsScreen() {
   const [term, setTerm] = useState<LeaderboardTerm>('2026-summer');
   const rows = mockSchoolRankings[term];
+  const chart = getLeaderboardAnalytics({ ...defaultFilters, termId: term }).trend;
 
   return (
     <>
@@ -34,6 +39,10 @@ export function AdminLeaderboardsScreen() {
           </button>
         ))}
       </div>
+
+      <ChartCard title="Top school engagement" subtitle="Top 5 by engagement %" className="mb-6">
+        <BarChart data={chart} valueFormatter={v => `${v}%`} />
+      </ChartCard>
 
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
         <DataTable

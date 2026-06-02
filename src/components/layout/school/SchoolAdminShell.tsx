@@ -1,8 +1,10 @@
 'use client';
 
+import { PortalShell } from '@/components/layout/PortalShell';
 import { SchoolAdminSidebar } from './SchoolAdminSidebar';
 import { SchoolBrandingHeader } from './SchoolBrandingHeader';
 import type { SchoolBranding } from '@/mocks/schoolAdminG1G3.mock';
+import { useSchoolBranding } from './useSchoolBranding';
 
 export type SchoolAdminShellProps = {
   slug: string;
@@ -10,14 +12,17 @@ export type SchoolAdminShellProps = {
   children: React.ReactNode;
 };
 
-export function SchoolAdminShell({ slug, branding, children }: SchoolAdminShellProps) {
+export function SchoolAdminShell({ slug, branding: initialBranding, children }: SchoolAdminShellProps) {
+  const { branding, brandStyle } = useSchoolBranding(slug, initialBranding);
+
   return (
-    <div className="flex min-h-screen bg-[var(--color-background)]">
-      <SchoolAdminSidebar slug={slug} branding={branding} />
-      <div className="flex min-w-0 flex-1 flex-col">
+    <PortalShell
+      style={brandStyle}
+      sidebar={<SchoolAdminSidebar slug={slug} branding={branding} />}
+      header={
         <SchoolBrandingHeader branding={branding} slug={slug} portal="admin" />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </div>
-    </div>
+      }>
+      {children}
+    </PortalShell>
   );
 }

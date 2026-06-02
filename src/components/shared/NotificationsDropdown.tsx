@@ -52,7 +52,7 @@ export function NotificationsDropdown({ slug, className }: NotificationsDropdown
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white shadow-lg">
+        <div className="absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-[var(--color-border)] bg-white shadow-lg">
           <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
             <p className="text-sm font-semibold">Notifications</p>
             {unread > 0 ? (

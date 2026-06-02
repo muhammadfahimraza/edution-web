@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 
 const NAV_ITEMS: { href: string; label: string; icon: IconName; exact?: boolean }[] = [
   { href: '/admin', label: 'Dashboard', icon: 'layoutDashboard', exact: true },
+  { href: '/admin/analytics', label: 'Analytics', icon: 'trendingUp' },
   { href: '/admin/schools', label: 'Schools', icon: 'school' },
   { href: '/admin/schools/new', label: 'Add school', icon: 'plus' },
   { href: '/admin/billing', label: 'Billing', icon: 'creditCard' },
@@ -30,10 +31,10 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-white/10 bg-[#1A1D21] text-white">
-      <div className="border-b border-white/10 px-4 py-5">
+    <aside className="flex h-full w-64 shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#1A1D21] text-white">
+      <div className="shrink-0 border-b border-white/10 px-4 py-5">
         <Link href="/admin" className="flex items-center gap-2">
-          <EduStationLogo size={36} showWordmark />
+          <EduStationLogo size={36} showWordmark onDark />
         </Link>
         <p className="mt-2 text-xs text-white/50">Platform admin</p>
       </div>
@@ -66,15 +67,11 @@ export function AdminSidebar() {
         </ul>
       </nav>
 
-      <div className="border-t border-white/10 p-4">
+      <div className="shrink-0 border-t border-white/10 p-4">
         <Link href="/" className="text-sm text-white/60 hover:text-white">
           ← Public site
         </Link>
       </div>
     </aside>
   );
-}
-
-function div({ className, children }: { className?: string; children?: React.ReactNode }) {
-  return <div className={className}>{children}</div>;
 }

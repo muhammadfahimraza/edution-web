@@ -6,7 +6,10 @@ import { useMemo, useState } from 'react';
 import { DataTable } from '@/components/admin/DataTable';
 import { AdminPageHeader } from '@/components/layout/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
+import { ChartCard } from '@/components/charts/ChartCard';
+import { BarChart } from '@/components/charts/BarChart';
 import { mockPrincipalTickets } from '@/mocks/principal.mock';
+import { getTicketVolumeByCategory } from '@/mocks/principalInsights.mock';
 
 function statusVariant(s: string) {
   if (s === 'escalated') return 'error' as const;
@@ -25,9 +28,17 @@ export function PrincipalTicketsScreen() {
     return mockPrincipalTickets.filter(t => t.status !== 'resolved');
   }, [tab]);
 
+  const categoryChart = useMemo(() => getTicketVolumeByCategory(), []);
+
   return (
     <>
       <AdminPageHeader title="Tickets overview" subtitle="Parent and staff support requests" />
+
+      <div className="mb-6 max-w-md">
+        <ChartCard title="Tickets by category" subtitle="All requests this term">
+          <BarChart data={categoryChart} />
+        </ChartCard>
+      </div>
 
       <div className="mb-4 flex gap-2">
         {(['open', 'all'] as const).map(t => (

@@ -45,7 +45,7 @@ export type AcademicTerm = {
 
 const brandingDefaults: Record<string, SchoolBranding> = {
   'green-valley': {
-    primaryColor: '#2563EB',
+    primaryColor: '#449691',
     displayName: 'Green Valley International School',
   },
   'sunrise-academy': {
@@ -71,7 +71,7 @@ export function getSchoolBranding(slug: string): SchoolBranding {
   const defaults = brandingDefaults[slug];
   if (defaults) return defaults;
   return {
-    primaryColor: '#2563EB',
+    primaryColor: '#449691',
     displayName: school?.name ?? slug,
   };
 }
