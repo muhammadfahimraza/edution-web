@@ -22,6 +22,19 @@ export function PortalShell({ sidebar, header, children, className, style }: Por
   }, [pathname]);
 
   useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!navOpen) {
       return;
     }
@@ -31,21 +44,22 @@ export function PortalShell({ sidebar, header, children, className, style }: Por
       }
     };
     document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
     };
   }, [navOpen]);
 
   return (
     <div
-      className={cn('flex h-screen overflow-hidden bg-[var(--color-background)]', className)}
+      className={cn(
+        'fixed inset-0 flex h-dvh max-h-dvh w-full overflow-hidden bg-[var(--color-background)]',
+        className,
+      )}
       style={style}>
-      <div className="hidden h-full w-64 shrink-0 lg:flex">{sidebar}</div>
+      <div className="hidden h-full min-h-0 w-64 shrink-0 xl:flex">{sidebar}</div>
 
       {navOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 xl:hidden">
           <button
             type="button"
             className="absolute inset-0 bg-black/40"
@@ -66,7 +80,7 @@ export function PortalShell({ sidebar, header, children, className, style }: Por
         <div className="flex shrink-0">
           <button
             type="button"
-            className="flex h-14 w-12 shrink-0 items-center justify-center border-b border-[var(--color-border)] bg-white text-[var(--color-text)] lg:hidden"
+            className="flex h-14 w-12 shrink-0 items-center justify-center border-b border-[var(--color-border)] bg-white text-[var(--color-text)] xl:hidden"
             aria-label="Open menu"
             aria-expanded={navOpen}
             onClick={() => setNavOpen(true)}>
@@ -74,7 +88,9 @@ export function PortalShell({ sidebar, header, children, className, style }: Por
           </button>
           <div className="min-w-0 flex-1">{header}</div>
         </div>
-        <main className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
+        <main className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 sm:p-6 [-webkit-overflow-scrolling:touch]">
+          {children}
+        </main>
       </div>
     </div>
   );
