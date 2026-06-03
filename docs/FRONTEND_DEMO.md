@@ -57,7 +57,7 @@ Test at **375px** (phone), **768px** (iPad portrait), and **1024px+** (iPad land
 
 | Check | Expected |
 |-------|----------|
-| Portal nav | Below `lg`: hamburger opens sidebar drawer; at `lg+`: fixed sidebar |
+| Portal nav | Below `xl` (1280px): hamburger + drawer (single scroll on iPad); at `xl+`: fixed sidebar |
 | Public header | Below `md`: hamburger with For schools, Staff login, Sign in, Get started |
 | Data tables | Below `lg`: stacked card rows; at `lg+`: table |
 | Timetable grid | Below `lg`: per-day cards; at `lg+`: week grid |
